@@ -1,10 +1,17 @@
-import { NextPage } from "next";
+import { NextPage, GetStaticPaths, GetStaticProps } from "next";
 import Layout from "../../components/Layout"
 import { getAllPostIds, getPostData } from '../../lib/posts'
 import Head from 'next/head'
 import Date from '../../components/date'
 import utilStyles from '../../styles/utils.module.css'
 
+type PostProps = {
+  postData: {
+    title: string
+    date: string
+    contentHtml: string
+  }
+}
 
 type PathParamsType = {
   params: {
@@ -12,7 +19,7 @@ type PathParamsType = {
   }
 }
 
-const PostPage: NextPage = ({ postData }: any) => {
+const PostPage: NextPage<PostProps> = ({ postData }) => {
   return (
     <Layout home={false}>
       <Head>
@@ -29,7 +36,7 @@ const PostPage: NextPage = ({ postData }: any) => {
   )
 }
 
-export const getStaticPaths = () => { // 表示する可能性のあるページ（パス）を羅列＜ビルド時に用意される＞
+export const getStaticPaths: GetStaticPaths = () => { // 表示する可能性のあるページ（パス）を羅列＜ビルド時に用意される＞
   const paths = getAllPostIds(); // 表示可能なファイル名の配列が返ってくる
   return {
     paths,
@@ -39,8 +46,8 @@ export const getStaticPaths = () => { // 表示する可能性のあるページ
 
 // getStaticPaths実行後にそれぞれのパス（配列要素全て）に対して実行される
 // データが保管されている場所から、実際にデータをとってきて、スタンバイさせておく
-export const getStaticProps = async ({params}: PathParamsType) => { //SSG でデータをフェッチ
-  const postData = await getPostData(params.id); // id(=各ファイル名)を渡すことで、その投稿データを取得する
+export const getStaticProps: GetStaticProps = async ({params}) => { //SSG でデータをフェッチ
+  const postData = await getPostData(params?.id as string) // id(=各ファイル名)を渡すことで、その投稿データを取得する
   return {
     props: {
       postData, // 取得したデータをpropsとしてページコンポーネントに提供

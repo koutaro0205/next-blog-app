@@ -2,15 +2,17 @@ import Head from 'next/head'
 import Layout, { siteTitle } from '../components/Layout'
 import utilStyles from '../styles/utils.module.css'
 import { NextPage } from 'next'
-import type { GetStaticProps, InferGetStaticPropsType, GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 import { getSortedPostsData } from '../lib/posts'
 import Link from 'next/link'
 import Date from '../components/date'
 
-type AllPropsDataType = {
-  id: string
-  date: string
-  title: string
+type Props = {
+  allPostsData: {
+    id: string
+    title: string
+    date: string
+  }[] // 複数のオブジェクトを持つ配列型
 }
 
 // type HomePageProps = InferGetStaticPropsType<typeof getStaticProps>
@@ -25,7 +27,7 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 
-const Home: NextPage = ({allPostsData}: any) => {
+const Home: NextPage<Props> = ({allPostsData}) => {
   return (
     <Layout home={true}>
       <Head>
@@ -41,7 +43,7 @@ const Home: NextPage = ({allPostsData}: any) => {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }: AllPropsDataType) => (
+          {allPostsData.map(({ id, date, title }) => (
             <li className={utilStyles.listItem} key={id}>
               <Link href={`/posts/${id}`}>
                 <a>{title}</a>
